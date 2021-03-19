@@ -1,7 +1,25 @@
 
-from flask import Flask, jsonify,abort
+from flask import Flask, jsonify,abort,g
+from flask_httpauth import HTTPTokenAuth
+
+
 
 app = Flask(__name__)
+
+
+auth = HTTPTokenAuth(scheme='Token')
+tokens = {
+"secret-token-1": "john",
+"secret-token-2": "susan"
+}
+# 回调函数，验证 token 是否合法
+@auth.verify_token
+def verify_token(token):
+    if token in tokens:
+        g.current_user = tokens[token]
+        return True
+    return False
+
 books = [
     {
         'id': 1,
@@ -18,6 +36,7 @@ books = [
 ]
 
 @app.route('/bookstore/api/v1/books', methods=['GET'])
+@auth.login_required
 def get_tasks():
     return jsonify({'books': books})
 
@@ -33,7 +52,7 @@ def get_task(id):
 
 @app.route('/')
 def index():
-    return 'Hello World'
+    return 'Hello World  flask'
 
 
 if __name__ == '__main__':

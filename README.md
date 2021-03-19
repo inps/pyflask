@@ -6,3 +6,6 @@
 
 导出包文件描述
 pip freeze > requirements.txt
+
+
+python -m pip install --upgrade pip
