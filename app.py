@@ -1,24 +1,42 @@
 
 from flask import Flask, jsonify,abort,g
 from flask_httpauth import HTTPTokenAuth
-
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secretkeyhere'
+# 在Authorization 的Bearer方式进行认证
+auth = HTTPTokenAuth(scheme='Bearer')
+
+serializer = Serializer("secretkey", expires_in=600)
+users = ['john', 'susan']
 
 
-auth = HTTPTokenAuth(scheme='Token')
-tokens = {
-"secret-token-1": "john",
-"secret-token-2": "susan"
-}
-# 回调函数，验证 token 是否合法
+
+# 生成 token
+for user in users:
+    token = serializer.dumps({'username': user})
+    print('Token for {}: {}'.format(user, token))
+
+# 回调函数，对 token 进行验证
 @auth.verify_token
 def verify_token(token):
-    if token in tokens:
-        g.current_user = tokens[token]
+    g.user = None
+    try:
+        data = serializer.loads(token)
+    except:
+        return False
+    if 'username' in data:
+        g.user = data['username']
         return True
     return False
+
+
+
+
+
+
 
 books = [
     {
@@ -38,6 +56,7 @@ books = [
 @app.route('/bookstore/api/v1/books', methods=['GET'])
 @auth.login_required
 def get_tasks():
+    #return "Hello, %s!" % g.user
     return jsonify({'books': books})
 
 
@@ -51,6 +70,7 @@ def get_task(id):
 
 
 @app.route('/')
+
 def index():
     return 'Hello World  flask'
 
