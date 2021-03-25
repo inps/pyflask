@@ -6,8 +6,13 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secretkeyhere'
-# 在Authorization 的Bearer方式进行认证
-auth = HTTPTokenAuth(scheme='Bearer')
+
+
+# 在Authorization 的Bearer方式进行认证  authorization  token 中加入字符串
+auth = HTTPTokenAuth(scheme='bearer')  
+
+#   head 中  加入 authorization  JWT +  token  ，  Content-Type  application/json
+#  auth = HTTPTokenAuth(scheme='JWT')  
 
 serializer = Serializer("secretkey", expires_in=600)
 users = ['john', 'susan']
