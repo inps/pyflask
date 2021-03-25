@@ -9,3 +9,9 @@ pip freeze > requirements.txt
 
 
 python -m pip install --upgrade pip
+
+安装 flask 插件
+pip install flask_httpauth    #token
+pip install flask-redis       #redis
+pip install flask_sqlalchemy  #mysql
+pip install tornado           #tornado

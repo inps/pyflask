@@ -1,5 +1,5 @@
 
-from flask import Flask, jsonify,abort,g
+from flask import Flask,render_template, jsonify,abort,g
 from flask_httpauth import HTTPTokenAuth
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
@@ -12,7 +12,7 @@ app.config['SECRET_KEY'] = 'secretkeyhere'
 auth = HTTPTokenAuth(scheme='bearer')  
 
 #   head 中  加入 authorization  JWT +  token  ，  Content-Type  application/json
-#  auth = HTTPTokenAuth(scheme='JWT')  
+#auth = HTTPTokenAuth(scheme='JWT')  
 
 serializer = Serializer("secretkey", expires_in=600)
 users = ['john', 'susan']
@@ -38,11 +38,6 @@ def verify_token(token):
     return False
 
 
-
-
-
-
-
 books = [
     {
         'id': 1,
@@ -58,8 +53,14 @@ books = [
     }
 ]
 
+@app.route('/bookstore/api/v1/book', methods=['GET'])
+def get_task1():
+    #return "Hello, %s!" % g.user
+    return render_template('book.html',bookitem= books)
+
+
 @app.route('/bookstore/api/v1/books', methods=['GET'])
-@auth.login_required
+#@auth.login_required
 def get_tasks():
     #return "Hello, %s!" % g.user
     return jsonify({'books': books})
